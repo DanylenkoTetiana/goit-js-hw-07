@@ -19,14 +19,23 @@ const markup = galleryItems
   .join('');
 
 galleryEl.insertAdjacentHTML('afterbegin', markup);
-let selectedImg = 0;
+let instance = 0;
 
 function handlerClick(event) {
   event.preventDefault();
-  return (selectedImg = event.target.dataset.source);
+  const selectedImg = event.target.dataset.source;
+  instance = basicLightbox.create(`<img width="1400" height="900" src="${selectedImg}">`);
+  instance.show(() => {
+    document.addEventListener('keydown', handlerKeydown);
+  });
 }
 galleryEl.addEventListener('click', handlerClick);
 
-galleryEl.onclick = () => {
-  basicLightbox.create(`<img width="1400" height="900" src="${selectedImg}">`).show();
-};
+function handlerKeydown(event) {
+  console.log(event.code);
+  if (event.code === 'Escape') {
+    instance.close(() => {
+      document.removeEventListener('keydown', handlerKeydown);
+    });
+  }
+}
